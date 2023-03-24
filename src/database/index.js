@@ -6,7 +6,7 @@ export class Database {
   #database = {}
 
   #persist() {
-    fs.writeFile(dbPath, JSON.stringify(this.#database))
+    fs.writeFile(dbPath, JSON.stringify(this.#database, null, 2))
   }
 
   constructor() {
