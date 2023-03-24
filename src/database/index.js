@@ -49,10 +49,20 @@ export class Database {
   update(table, id, data) {
     const rowIndex = this.#database[table].findIndex(row => row.id === id)
 
-    if (!rowIndex) return
+    if (rowIndex === -1) return
 
     this.#database[table][rowIndex] = { id, ...data }
     this.#persist()
     return this.#database[table][rowIndex]
+  }
+
+  delete(table, id) {
+    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+
+    if (rowIndex === -1) return
+
+    const [removedData] = this.#database[table].splice(rowIndex, 1)
+    this.#persist()
+    return removedData
   }
 }

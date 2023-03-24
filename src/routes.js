@@ -11,7 +11,7 @@ export const routes = [
     path: buildRoutePath('/tasks'),
     handler(req, res) {
       if (req.body == null) {
-        return res.writeHead(400).end(`Missing body attributes.`)
+        return res.writeHead(400).end(JSON.stringify(`Missing body attributes`))
       }
 
       const { title, description } = req.body
@@ -56,7 +56,7 @@ export const routes = [
       const task = db.find('tasks', id)
 
       if (!task) {
-        return res.writeHead(404).end(`Task not found.`)
+        return res.writeHead(404).end(JSON.stringify(`Task not found`))
       }
 
       const updatedTask = db.update('tasks', id, {
@@ -67,6 +67,21 @@ export const routes = [
       })
 
       return res.end(JSON.stringify(updatedTask))
+    }
+  },
+  {
+    method: 'DELETE',
+    path: buildRoutePath('/tasks/:id'),
+    handler(req, res) {
+      const { id } = req.params
+
+      const removedTask = db.delete('tasks', id)
+
+      if (!removedTask) {
+        return res.writeHead(404).end(JSON.stringify(`Task not found`))
+      }
+
+      return res.writeHead(204).end()
     }
   }
 ]
