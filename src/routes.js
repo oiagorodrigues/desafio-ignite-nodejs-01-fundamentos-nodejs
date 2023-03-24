@@ -47,6 +47,21 @@ export const routes = [
     }
   },
   {
+    method: 'GET',
+    path: buildRoutePath('/tasks/:id'),
+    handler(req, res) {
+      const { id } = req.params
+
+      const task = db.find('tasks', id)
+
+      if (!task) {
+        return res.writeHead(404).end(JSON.stringify(`Task not found`))
+      }
+
+      return res.end(JSON.stringify(task))
+    }
+  },
+  {
     method: 'PUT',
     path: buildRoutePath('/tasks/:id'),
     handler(req, res) {
