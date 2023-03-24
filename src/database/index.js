@@ -27,8 +27,17 @@ export class Database {
     return data
   }
 
-  select(table) {
-    const data = this.#database[table] ?? []
+  select(table, query) {
+    let data = this.#database[table] ?? []
+
+    if (query) {
+      data = data.filter(row => {
+        return Object.entries(query).some(([key, value]) => {
+            return row[key].toLowerCase().includes(value.toLowerCase())
+          })
+      })
+    }
+
     return data
   }
 }
