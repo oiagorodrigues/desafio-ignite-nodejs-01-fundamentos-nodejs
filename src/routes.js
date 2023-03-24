@@ -11,23 +11,30 @@ export const routes = [
     path: buildRoutePath('/tasks'),
     handler(req, res) {
       if (req.body === null) {
-        return res.writeHead(400).end(JSON.stringify(`Missing body attributes`))
+        return res.writeHead(400).end(JSON.stringify({
+          message: `Missing body attributes`
+        }))
       }
 
       const { title, description } = req.body
 
-      if (title === null || title === undefined) {
-        return res.writeHead(400).end(JSON.stringify(`Missing task's title`))
+      if (!title) {
+        return res.writeHead(400).end(JSON.stringify({
+          message: `Title is required`
+        }))
       }
 
-      if (description === null || description === undefined) {
-        return res.writeHead(400).end(JSON.stringify(`Missing task's description`))
+      if (!description) {
+        return res.writeHead(400).end(JSON.stringify({
+          message: `Description is required`
+        }))
       }
 
+      const date = new Date().toISOString()
       const task = {
         id: randomUUID(),
-        created_at: new Date().toISOString(),
-        updated_at: null,
+        created_at: date,
+        updated_at: date,
         completed_at: null,
         title,
         description
@@ -37,7 +44,7 @@ export const routes = [
 
       return res
         .writeHead(201)
-        .end(JSON.stringify(task))
+        .end(JSON.stringify({ data: task }))
     }
   },
   {
@@ -51,7 +58,7 @@ export const routes = [
         description: search
       } : null)
 
-      return res.end(JSON.stringify(tasks))
+      return res.end(JSON.stringify({ data: tasks }))
     }
   },
   {
@@ -63,10 +70,12 @@ export const routes = [
       const task = db.find('tasks', id)
 
       if (!task) {
-        return res.writeHead(404).end(JSON.stringify(`Task not found`))
+        return res.writeHead(404).end(
+          JSON.stringify({ message: `Task Not Found` })
+        )
       }
 
-      return res.end(JSON.stringify(task))
+      return res.end(JSON.stringify({ data: task }))
     }
   },
   {
@@ -77,23 +86,26 @@ export const routes = [
       const { title, description } = req.body
 
       if (!description && !title) {
-        return res.writeHead(400).end(JSON.stringify(`Missing task's title and description`))
+        return res.writeHead(400).end(
+          JSON.stringify({ message: `Missing task's title and description` })
+        )
       }
 
       const task = db.find('tasks', id)
 
       if (!task) {
-        return res.writeHead(404).end(JSON.stringify(`Task not found`))
+        return res.writeHead(404).end(
+          JSON.stringify({ message: `Task not found` })
+        )
       }
 
       const updatedTask = db.update('tasks', id, {
-        ...task,
         title: title ?? task.title,
         description: description ?? task.description,
         updated_at: new Date().toISOString()
       })
 
-      return res.end(JSON.stringify(updatedTask))
+      return res.end(JSON.stringify({ data: updatedTask }))
     }
   },
   {
@@ -102,11 +114,15 @@ export const routes = [
     handler(req, res) {
       const { id } = req.params
 
-      const removedTask = db.delete('tasks', id)
+      const task = db.find('tasks', id)
 
-      if (!removedTask) {
-        return res.writeHead(404).end(JSON.stringify(`Task not found`))
+      if (!task) {
+        return res.writeHead(404).end(
+          JSON.stringify({ message: `Task not found` })
+        )
       }
+
+      db.delete('tasks', id)
 
       return res.writeHead(204).end()
     }
@@ -120,18 +136,17 @@ export const routes = [
       const task = db.find('tasks', id)
 
       if (!task) {
-        return res.writeHead(404).end(JSON.stringify(`Task not found`))
+        return res.writeHead(404).end(
+          JSON.stringify({ message: `Task not found` })
+        )
       }
 
       const isTaskCompleted = !!task.completed_at
       const completed_at = !isTaskCompleted ? new Date().toISOString() : null
-      const completedTask = db.update('tasks', id, {
-        ...task,
-        updated_at: new Date().toISOString(),
-        completed_at,
-      })
 
-      return res.end(JSON.stringify(completedTask))
+      const completedTask = db.update('tasks', id, { completed_at })
+
+      return res.end(JSON.stringify({ data: completedTask }))
     }
   }
 ]
