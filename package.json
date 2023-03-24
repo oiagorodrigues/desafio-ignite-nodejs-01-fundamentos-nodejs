@@ -1,7 +1,8 @@
 {
-  "name": "01-fundamentos-nodejs-desafio",
+  "name": "desafio-ignite-nodejs-01-fundamentos-nodejs",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "server": "node --watch src/server.js"
