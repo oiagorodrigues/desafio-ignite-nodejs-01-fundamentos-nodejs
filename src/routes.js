@@ -30,5 +30,13 @@ export const routes = [
         .writeHead(201)
         .end(JSON.stringify(task))
     }
+  },
+  {
+    method: 'GET',
+    url: '/tasks',
+    handler(req, res) {
+      const tasks = db.select('tasks')
+      return res.end(JSON.stringify(tasks))
+    }
   }
 ]
