@@ -123,10 +123,12 @@ export const routes = [
         return res.writeHead(404).end(JSON.stringify(`Task not found`))
       }
 
+      const isTaskCompleted = !!task.completed_at
+      const completed_at = !isTaskCompleted ? new Date().toISOString() : null
       const completedTask = db.update('tasks', id, {
         ...task,
         updated_at: new Date().toISOString(),
-        completed_at: new Date().toISOString(),
+        completed_at,
       })
 
       return res.end(JSON.stringify(completedTask))
