@@ -10,11 +10,19 @@ export const routes = [
     method: 'POST',
     path: buildRoutePath('/tasks'),
     handler(req, res) {
-      if (req.body == null) {
+      if (req.body === null) {
         return res.writeHead(400).end(JSON.stringify(`Missing body attributes`))
       }
 
       const { title, description } = req.body
+
+      if (title === null || title === undefined) {
+        return res.writeHead(400).end(JSON.stringify(`Missing task's title`))
+      }
+
+      if (description === null || description === undefined) {
+        return res.writeHead(400).end(JSON.stringify(`Missing task's description`))
+      }
 
       const task = {
         id: randomUUID(),
@@ -67,6 +75,10 @@ export const routes = [
     handler(req, res) {
       const { id } = req.params
       const { title, description } = req.body
+
+      if (!description && !title) {
+        return res.writeHead(400).end(JSON.stringify(`Missing task's title and description`))
+      }
 
       const task = db.find('tasks', id)
 
