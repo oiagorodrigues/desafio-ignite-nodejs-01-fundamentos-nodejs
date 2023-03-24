@@ -40,4 +40,19 @@ export class Database {
 
     return data
   }
+
+  find(table, id) {
+    const data = this.#database[table].find(row => row.id === id)
+    return data
+  }
+
+  update(table, id, data) {
+    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+
+    if (!rowIndex) return
+
+    this.#database[table][rowIndex] = { id, ...data }
+    this.#persist()
+    return this.#database[table][rowIndex]
+  }
 }
